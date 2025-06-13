@@ -1,0 +1,28 @@
+!/bin/bash
+
+read -p 'Which service to install: ' SERVICE
+
+PLAYBOOK_NAME="install_$SERVICE.yaml"
+
+cat <<EOF > $PLAYBOOK_NAME
+---
+
+- name: Install $SERVICE
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install $SERVICE
+      dnf:
+        name: $SERVICE
+        state: present
+
+    - name: Start $SERVICE
+      service:
+        name: $SERVICE
+        state: started
+        enabled: true
+EOF
+
+echo "Playbook created: $PLAYBOOK_NAME"
+echo "Run it using: ansible-playbook $PLAYBOOK_NAME --ask-become-pass"
